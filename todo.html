@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>قائمة المهام 📝</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .input-section {
+            padding: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        #todoInput {
+            flex: 1;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            font-family: 'Cairo', sans-serif;
+            transition: border-color 0.3s;
+        }
+
+        #todoInput:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        #addBtn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            font-family: 'Cairo', sans-serif;
+        }
+
+        #addBtn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        #addBtn:active {
+            transform: translateY(0);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s;
+        }
+
+        .filter-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .todos-section {
+            padding: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .todos-section::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .todos-section::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .todos-section::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 4px;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            animation: fadeIn 0.3s ease;
+            transition: all 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .todo-item:hover {
+            background: #f0f0f0;
+            transform: translateX(-5px);
+        }
+
+        .todo-item.completed {
+            opacity: 0.6;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: #999;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+            accent-color: #667eea;
+        }
+
+        .todo-text {
+            flex: 1;
+            font-size: 16px;
+            color: #333;
+            word-break: break-word;
+        }
+
+        .todo-date {
+            font-size: 12px;
+            color: #999;
+            min-width: 100px;
+        }
+
+        .delete-btn {
+            padding: 6px 12px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.2s;
+        }
+
+        .delete-btn:hover {
+            background: #ff3838;
+            transform: scale(1.05);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+            background: #f9f9f9;
+            border-top: 2px solid #f0f0f0;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 5px;
+        }
+
+        .clear-all-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f0f0f0;
+            color: #ff4757;
+            border: none;
+            font-size: 14px;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+
+        .clear-all-btn:hover {
+            background: #ff4757;
+            color: white;
+        }
+
+        .priority-badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .priority-high {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .priority-medium {
+            background: #fff3e0;
+            color: #e65100;
+        }
+
+        .priority-low {
+            background: #e8f5e9;
+            color: #2e7d32;
+        }
+
+        .priority-select {
+            padding: 8px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: 'Cairo', sans-serif;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                max-width: 100%;
+            }
+
+            .input-group {
+                flex-direction: column;
+            }
+
+            .filter-buttons {
+                flex-wrap: wrap;
+            }
+
+            .stats {
+                gap: 10px;
+            }
+
+            .todo-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .todo-date {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 قائمة المهام</h1>
+            <p>نظم مهامك بكفاءة</p>
+        </div>
+
+        <div class="input-section">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="todoInput" 
+                    placeholder="أضف مهمة جديدة..."
+                    onkeypress="handleKeyPress(event)"
+                >
+                <select id="prioritySelect" class="priority-select">
+                    <option value="low">🟢 منخفضة</option>
+                    <option value="medium" selected>🟡 متوسطة</option>
+                    <option value="high">🔴 عالية</option>
+                </select>
+                <button id="addBtn" onclick="addTodo()">إضافة</button>
+            </div>
+
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterTodos('all')">الكل</button>
+                <button class="filter-btn" onclick="filterTodos('active')">نشطة</button>
+                <button class="filter-btn" onclick="filterTodos('completed')">مكتملة</button>
+            </div>
+        </div>
+
+        <div class="todos-section" id="todosContainer">
+            <!-- Todos will be inserted here -->
+        </div>
+
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number" id="totalTodos">0</div>
+                <div class="stat-label">المجموع</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="activeTodos">0</div>
+                <div class="stat-label">نشطة</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number" id="completedTodos">0</div>
+                <div class="stat-label">مكتملة</div>
+            </div>
+        </div>
+
+        <button class="clear-all-btn" onclick="clearCompleted()">حذف المكتملة</button>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'todos_loly';
+        let todos = [];
+        let currentFilter = 'all';
+
+        // Load todos from local storage
+        function loadTodos() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            todos = stored ? JSON.parse(stored) : [];
+            renderTodos();
+            updateStats();
+        }
+
+        // Save todos to local storage
+        function saveTodos() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+        }
+
+        // Add new todo
+        function addTodo() {
+            const input = document.getElementById('todoInput');
+            const priority = document.getElementById('prioritySelect').value;
+            const text = input.value.trim();
+
+            if (!text) {
+                alert('الرجاء إدخال مهمة!');
+                return;
+            }
+
+            const newTodo = {
+                id: Date.now(),
+                text: text,
+                completed: false,
+                priority: priority,
+                date: new Date().toLocaleDateString('ar-SA')
+            };
+
+            todos.unshift(newTodo);
+            saveTodos();
+            input.value = '';
+            input.focus();
+            renderTodos();
+            updateStats();
+        }
+
+        // Toggle todo completion
+        function toggleTodo(id) {
+            const todo = todos.find(t => t.id === id);
+            if (todo) {
+                todo.completed = !todo.completed;
+                saveTodos();
+                renderTodos();
+                updateStats();
+            }
+        }
+
+        // Delete todo
+        function deleteTodo(id) {
+            if (confirm('هل متأكد من حذف هذه المهمة؟')) {
+                todos = todos.filter(t => t.id !== id);
+                saveTodos();
+                renderTodos();
+                updateStats();
+            }
+        }
+
+        // Clear completed todos
+        function clearCompleted() {
+            const completedCount = todos.filter(t => t.completed).length;
+            if (completedCount === 0) {
+                alert('لا توجد مهام مكتملة للحذف!');
+                return;
+            }
+
+            if (confirm(`هل تريد حذف ${completedCount} مهمة مكتملة؟`)) {
+                todos = todos.filter(t => !t.completed);
+                saveTodos();
+                renderTodos();
+                updateStats();
+            }
+        }
+
+        // Filter todos
+        function filterTodos(filter) {
+            currentFilter = filter;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            renderTodos();
+        }
+
+        // Render todos
+        function renderTodos() {
+            const container = document.getElementById('todosContainer');
+            
+            let filtered = todos;
+            if (currentFilter === 'active') {
+                filtered = todos.filter(t => !t.completed);
+            } else if (currentFilter === 'completed') {
+                filtered = todos.filter(t => t.completed);
+            }
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📭</div>
+                        <p>${currentFilter === 'all' ? 'لا توجد مهام حالياً' : 
+                          currentFilter === 'active' ? 'لا توجد مهام نشطة' :
+                          'لا توجد مهام مكتملة'}</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = filtered.map(todo => {
+                const priorityIcons = {
+                    low: '🟢',
+                    medium: '🟡',
+                    high: '🔴'
+                };
+
+                const priorityLabels = {
+                    low: 'منخفضة',
+                    medium: 'متوسطة',
+                    high: 'عالية'
+                };
+
+                return `
+                    <div class="todo-item ${todo.completed ? 'completed' : ''}">
+                        <input 
+                            type="checkbox" 
+                            class="checkbox"
+                            ${todo.completed ? 'checked' : ''}
+                            onchange="toggleTodo(${todo.id})"
+                        >
+                        <div style="flex: 1;">
+                            <div class="todo-text">
+                                <span class="priority-badge priority-${todo.priority}">
+                                    ${priorityIcons[todo.priority]} ${priorityLabels[todo.priority]}
+                                </span>
+                                ${todo.text}
+                            </div>
+                            <div class="todo-date">${todo.date}</div>
+                        </div>
+                        <button class="delete-btn" onclick="deleteTodo(${todo.id})">حذف</button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Update statistics
+        function updateStats() {
+            const total = todos.length;
+            const active = todos.filter(t => !t.completed).length;
+            const completed = todos.filter(t => t.completed).length;
+
+            document.getElementById('totalTodos').textContent = total;
+            document.getElementById('activeTodos').textContent = active;
+            document.getElementById('completedTodos').textContent = completed;
+        }
+
+        // Handle Enter key
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                addTodo();
+            }
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', loadTodos);
+    </script>
+</body>
+</html>
